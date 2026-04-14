@@ -1,7 +1,6 @@
 <script>
-    import Textbox from "./lib/Textbox.svelte";
+    import "./app.css";
+    import NoteEditor from "./lib/noteeditor.svelte";
 </script>
 
-<section id="center">
-    <Textbox />
-</section>
+<section id="center"><NoteEditor /></section>
