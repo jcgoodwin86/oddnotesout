@@ -13,9 +13,26 @@
     let saveTimer: ReturnType<typeof setTimeout> | null = null;
     let statusTimer: ReturnType<typeof setTimeout> | null = null;
 
-    onMount(async () => {
-        content = await LoadNote();
-        hasLoaded = true;
+    onMount(() => {
+        async function init() {
+            try {
+                content = await LoadNote();
+                hasLoaded = true;
+            } catch (err) {
+                console.error(err);
+                status = "error";
+            }
+        }
+
+        init();
+
+        window.addEventListener("keydown", handleKeydown);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeydown);
+            clearSaveTimer();
+            clearStatusTimer();
+        };
     });
 
     async function saveNow() {
@@ -39,7 +56,7 @@
     }
 
     $effect(() => {
-        content; // Placed here so when content changes it triggers effect
+        content; // track content changes for autosave
         if (!hasLoaded || !hasUserEdited) return;
 
         // clear timers
@@ -65,6 +82,18 @@
             clearTimeout(statusTimer);
             statusTimer = null;
         }
+    }
+
+    function handleKeydown(event: KeyboardEvent) {
+        if (status === "saving") return; // helps if user repeatly saves
+
+        const isSaveShortcut =
+            (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s";
+
+        if (!isSaveShortcut) return;
+
+        event.preventDefault();
+        saveNow();
     }
 </script>
 
