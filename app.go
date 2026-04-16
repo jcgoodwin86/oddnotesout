@@ -5,12 +5,15 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 // App struct
 type App struct {
-	ctx      context.Context
-	notePath string
+	ctx         context.Context
+	notePath    string
+	alwaysOnTop bool
 }
 
 // NewApp creates a new App application struct
@@ -32,6 +35,7 @@ func (a *App) startup(ctx context.Context) {
 	}
 
 	a.notePath = filepath.Join(home, notesDir, "temp.txt")
+	a.alwaysOnTop = false
 }
 
 func (a *App) SaveNote(content string) error {
@@ -64,4 +68,10 @@ func (a *App) LoadNote() string {
 
 	content := string(data)
 	return content
+}
+
+func (a *App) ToggleAlwaysOnTop() bool {
+	a.alwaysOnTop = !a.alwaysOnTop
+	runtime.WindowSetAlwaysOnTop(a.ctx, a.alwaysOnTop)
+	return a.alwaysOnTop
 }

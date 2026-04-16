@@ -1,6 +1,10 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { LoadNote, SaveNote } from "../../wailsjs/go/main/App";
+    import {
+        LoadNote,
+        SaveNote,
+        ToggleAlwaysOnTop,
+    } from "../../wailsjs/go/main/App";
     import { Button } from "$lib/components/ui/button";
     import { Textarea } from "$lib/components/ui/textarea";
 
@@ -85,15 +89,23 @@
     }
 
     function handleKeydown(event: KeyboardEvent) {
-        if (status === "saving") return; // helps if user repeatly saves
+        const key = event.key.toLowerCase();
+        const isMod = event.ctrlKey || event.metaKey;
 
-        const isSaveShortcut =
-            (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s";
+        if (!isMod) return;
 
-        if (!isSaveShortcut) return;
+        switch (key) {
+            case "s":
+                if (status === "saving") return;
+                event.preventDefault();
+                saveNow();
+                break;
 
-        event.preventDefault();
-        saveNow();
+            case "t":
+                event.preventDefault();
+                ToggleAlwaysOnTop();
+                break;
+        }
     }
 </script>
 
