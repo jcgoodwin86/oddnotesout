@@ -13,3 +13,7 @@ export function SaveNote(arg1) {
 export function ToggleAlwaysOnTop() {
   return window['go']['main']['App']['ToggleAlwaysOnTop']();
 }
+
+export function ToggleWindow() {
+  return window['go']['main']['App']['ToggleWindow']();
+}

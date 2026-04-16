@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
+	"golang.design/x/hotkey"
 )
 
 // App struct
@@ -14,6 +15,7 @@ type App struct {
 	ctx         context.Context
 	notePath    string
 	alwaysOnTop bool
+	visible     bool
 }
 
 // NewApp creates a new App application struct
@@ -36,6 +38,9 @@ func (a *App) startup(ctx context.Context) {
 
 	a.notePath = filepath.Join(home, notesDir, "temp.txt")
 	a.alwaysOnTop = false
+	a.visible = true
+	go a.registerHotkey()
+
 }
 
 func (a *App) SaveNote(content string) error {
@@ -74,4 +79,29 @@ func (a *App) ToggleAlwaysOnTop() bool {
 	a.alwaysOnTop = !a.alwaysOnTop
 	runtime.WindowSetAlwaysOnTop(a.ctx, a.alwaysOnTop)
 	return a.alwaysOnTop
+}
+
+func (a *App) ToggleWindow() bool {
+	a.visible = !a.visible
+	if a.visible {
+		runtime.WindowShow(a.ctx)
+	} else {
+		runtime.WindowHide(a.ctx)
+	}
+	return a.visible
+}
+
+func (a *App) registerHotkey() {
+	hk := hotkey.New([]hotkey.Modifier{hotkey.ModCmd, hotkey.ModShift}, hotkey.KeyH)
+
+	err := hk.Register()
+	if err != nil {
+		log.Println("hotkey register failed:", err)
+		return
+	}
+
+	for {
+		<-hk.Keydown()
+		a.ToggleWindow()
+	}
 }

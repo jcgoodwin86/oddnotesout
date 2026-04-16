@@ -5,4 +5,6 @@ export function LoadNote():Promise<string>;
 
 export function SaveNote(arg1:string):Promise<void>;
 
-export function ToggleAlwaysOnTop():Promise<void>;
+export function ToggleAlwaysOnTop():Promise<boolean>;
+
+export function ToggleWindow():Promise<boolean>;
