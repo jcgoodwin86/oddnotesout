@@ -6,7 +6,9 @@
         ToggleAlwaysOnTop,
     } from "../../wailsjs/go/main/App";
     import { Button } from "$lib/components/ui/button";
-    import { Textarea } from "$lib/components/ui/textarea";
+    import CodeMirror from "svelte-codemirror-editor";
+    import { markdown } from "@codemirror/lang-markdown";
+    import { oneDark } from "@codemirror/theme-one-dark";
 
     let content = $state("");
     let status = $state<"idle" | "typing" | "saving" | "saved" | "error">(
@@ -110,13 +112,15 @@
 </script>
 
 <div class="h-screen flex flex-col p-4 gap-2">
-    <Textarea
+    <CodeMirror
         class="flex-1 resize-none border rounded p-2"
         bind:value={content}
-        oninput={() => {
+        onchange={() => {
             hasUserEdited = true;
         }}
-    ></Textarea>
+        lang={markdown()}
+        theme={oneDark}
+    ></CodeMirror>
 
     <div class="flex justify-between">
         {#if status === "saving"}
